@@ -52,12 +52,39 @@ def lookup_plant(plant_name: str) -> dict:
 
     Before writing code, complete the lookup_plant section of specs/tool-functions-spec.md.
     """
-    return {
-        "found": False,
-        "name": plant_name,
-        "message": "Plant lookup not yet implemented. Complete Milestone 1.",
-    }
 
+    # return {
+    #     "found": False,
+    #     "name": plant_name,
+    #     "message": "Plant lookup not yet implemented. Complete Milestone 1.",
+    # }
+
+    normalized_plant_name = plant_name.strip().lower()
+    normalized_slug = normalized_plant_name.replace(" ", "_")
+
+    if normalized_slug in _plant_db:
+        return {"found": True, "plant": _plant_db[normalized_slug]}
+    
+    for slug,plant in _plant_db.items():
+
+        if plant["display_name"].lower() == normalized_plant_name:
+            return {"found": True, "plant": plant}
+        
+        if plant["scientific_name"].lower() == normalized_plant_name:
+            return {"found": True, "plant": plant}
+
+        if normalized_plant_name in [alias.lower() for alias in plant["aliases"]]:
+            return {"found": True, "plant": plant}
+
+    return {
+    "found": False,
+    "name": plant_name,
+    "message": (
+        f"'{plant_name}' was not found in the plant database. "
+        "Do not provide care advice from general knowledge. "
+        "Tell the user this plant is not in the available materials and ask them to try another common name, scientific name, or alias."
+    ),
+}
 
 def get_seasonal_conditions(season: str | None = None) -> dict:
     """

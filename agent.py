@@ -132,4 +132,47 @@ def run_agent(user_message: str, history: list) -> str:
 
     Before writing code, complete specs/agent-loop-spec.md.
     """
-    return "🌱 Agent not yet implemented. Complete Milestone 2 to activate the Plant Advisor."
+    # return "🌱 Agent not yet implemented. Complete Milestone 2 to activate the Plant Advisor."
+
+
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+    ]
+
+    for user, assistant in history:
+        messages.append({"role": "user", "content": user})
+        messages.append({"role": "assistant", "content": assistant})
+
+    messages.append({"role": "user", "content": user_message})
+
+    for _ in range(MAX_TOOL_ROUNDS):
+
+        response = _client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=messages,
+            tools=TOOL_DEFINITIONS,
+            tool_choice="auto",
+        )
+
+        assistant_message = response.choices[0].message
+
+        if not assistant_message.tool_calls:
+            return assistant_message.content
+
+        messages.append(assistant_message)
+
+        for tool_call in assistant_message.tool_calls:
+            tool_name = tool_call.function.name
+            raw_args = tool_call.function.arguments
+            tool_args = json.loads(raw_args) if raw_args else {}
+            if not isinstance(tool_args, dict):
+                tool_args = {}
+            tool_result = dispatch_tool(tool_name, tool_args)
+
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": tool_result,
+            })
+
+    return "I reached the maximum number of tool calls before I could finish the answer."

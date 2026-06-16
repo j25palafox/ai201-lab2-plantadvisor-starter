@@ -74,6 +74,7 @@ the broadest net, so they go last.
 
 ```
 [your answer here]
+I think that we need to normalize aliases given by user as well as aliases provided within the list of the plant information. This will help clear up confusion of possible dashes and apostraphes. Then it is a matter of searching the lists for the given alias.
 ```
 
 ---
@@ -84,6 +85,11 @@ the broadest net, so they go last.
 
 ```
 [your answer here]
+
+f"'{plant_name}' was not found in the plant database. "
+"Do not provide care advice from general knowledge. "
+"Tell the user this plant is not in the available materials and ask them to try another common name, scientific name, or alias."
+
 ```
 
 ---
@@ -95,16 +101,22 @@ the broadest net, so they go last.
 **Test: does `"devil's ivy"` return the pothos entry?**
 ```
 [yes / no — if no, describe what happened]
+Yes pothos dictionary was returned in full.
+
 ```
 
 **Test: does `"SNAKE PLANT"` return the snake plant entry?**
 ```
 [yes / no — if no, describe what happened]
+Yes the snake plant dictionary is returned in full.
+
 ```
 
 **One edge case you discovered while implementing:**
 ```
 [your answer here]
+Typos trip up the function, "snak eplant" does not return snake plant and instead it results that no such plant is found in the database.
+
 ```
 
 ---
@@ -189,9 +201,16 @@ The full season dict from `_season_data`, plus a `detected_season` boolean. Exam
 Current month: [month]
 Expected season: [season]
 Returned season: [season]
+
+Yes calling with None returns season of current month.
+Current month: June
+Expected season: Summer
+Returned season: Summer
+
 ```
 
 **Test: does calling with `season="winter"` return winter data regardless of the current month?**
 ```
 [yes / no]
+Yes
 ```

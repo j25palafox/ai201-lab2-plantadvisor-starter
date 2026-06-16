@@ -130,6 +130,9 @@ for tool_call in assistant_message.tool_calls:
 
 ```
 [your answer here]
+I will detect loop termination by tracking two variables. 
+a) LLM responds with no tool calls: response.choices[0].message.tool_calls is None so the LLM has finished using tools and is ready with final answer.
+b) MAX_TOOL_ROUNDS limit is reached, by tracking this in a loop of LLM calls, when limit is reached this means that LLM was still gathering information and thus does not have a final answer at the moment and should say so.
 ```
 
 ---
@@ -140,6 +143,9 @@ for tool_call in assistant_message.tool_calls:
 
 ```
 [your answer here]
+When there are no more tool calls, you extract answer from content:
+response.choices[0].message.content
+and return to user.
 ```
 
 ---
@@ -155,16 +161,21 @@ Query: "How should I care for my calathea?"
 Round 1 tool call: [tool name, args]
 Round 2 tool call: [tool name, args] (if any)
 Final response: [brief description]
+
+Round 1 tool call: → Tool call: lookup_plant({'plant_name': 'calathea'})
+Final response: care instructions for calathea
 ```
 
 **What happens when you ask about a plant that isn't in the database?**
 
 ```
 [describe the behavior you observed]
+LLM reasoned but couldn't find a grounded answer and suggested advice on potentially identifying the plant by different name.
 ```
 
 **One thing about the tool call API that surprised you:**
 
 ```
 [your answer here]
+LLM calls it with text and never actually sees code or execution, only string result.
 ```
